@@ -1,8 +1,13 @@
 import React from 'react';
-import { ChartData } from '../../types/chartData';
 
 interface FlowChartProps {
-  data: ChartData;
+  data: {
+    title: string;
+    checkpoints: string[];
+    currentStage: string;
+    finalGoal: string;
+    keyRequirements: string[];
+  };
 }
 
 const FlowChart: React.FC<FlowChartProps> = ({ data }) => {

@@ -1,39 +1,30 @@
-import React, { useState, useEffect } from 'react';
-import { ChartData } from '../../types/chartData';
+import React, { useState } from 'react';
 
 interface InputFormProps {
-  data: ChartData;
-  onChange: (newData: ChartData) => void;
+  data: {
+    title: string;
+    checkpoints: string[];
+    currentStage: string;
+    finalGoal: string;
+    keyRequirements: string[];
+  };
+  onChange: (newData: InputFormProps['data']) => void;
 }
 
 const InputForm: React.FC<InputFormProps> = ({ data, onChange }) => {
   const [checkpointsInput, setCheckpointsInput] = useState(data.checkpoints.join('\n'));
   const [requirementsInput, setRequirementsInput] = useState(data.keyRequirements.join('\n'));
 
-  useEffect(() => {
-    setCheckpointsInput(data.checkpoints.join('\n'));
-    setRequirementsInput(data.keyRequirements.join('\n'));
-  }, [data]);
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     if (name === 'checkpoints') {
       setCheckpointsInput(value);
-      onChange({
-        ...data,
-        checkpoints: value.split('\n').filter(item => item.trim() !== '')
-      });
+      onChange({ ...data, checkpoints: value.split('\n').filter(item => item.trim() !== '') });
     } else if (name === 'keyRequirements') {
       setRequirementsInput(value);
-      onChange({
-        ...data,
-        keyRequirements: value.split('\n').filter(item => item.trim() !== '')
-      });
+      onChange({ ...data, keyRequirements: value.split('\n').filter(item => item.trim() !== '') });
     } else {
-      onChange({
-        ...data,
-        [name]: value
-      });
+      onChange({ ...data, [name]: value });
     }
   };
 
