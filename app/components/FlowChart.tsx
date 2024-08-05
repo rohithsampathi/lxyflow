@@ -40,10 +40,8 @@ const FlowChart: React.FC<FlowChartProps> = ({ data }) => {
     let path;
     if (startRow === endRow) {
       if (startRow % 2 === 0) {
-        // Left-to-right in even rows
         path = `M${startPos.x + boxWidth / 2},${startPos.y} H${endPos.x - boxWidth / 2}`;
       } else {
-        // Right-to-left in odd rows, go around the boxes
         const midY = startPos.y - boxHeight / 2 - 20;
         path = `M${startPos.x - boxWidth / 2},${startPos.y} 
                  H${startPos.x - boxWidth / 2 - 20} V${midY} 
@@ -51,7 +49,6 @@ const FlowChart: React.FC<FlowChartProps> = ({ data }) => {
                  H${endPos.x + boxWidth / 2}`;
       }
     } else {
-      // Vertical arrow for row change
       const isRightEdge = startRow % 2 === 0;
       const edgeX = isRightEdge ? svgWidth - 25 : 25;
       path = `M${startPos.x + (isRightEdge ? boxWidth / 2 : -boxWidth / 2)},${startPos.y} 
@@ -75,7 +72,12 @@ const FlowChart: React.FC<FlowChartProps> = ({ data }) => {
       <h2 className="text-3xl font-bold mb-6 text-center text-cyan-400">{data.title}</h2>
       
       <div className="overflow-x-auto">
-        <svg width={svgWidth} height={svgHeight} viewBox={`0 0 ${svgWidth} ${svgHeight}`}>
+        <svg 
+          width={svgWidth} 
+          height={svgHeight} 
+          viewBox={`0 0 ${svgWidth} ${svgHeight}`}
+          style={{ minWidth: `${svgWidth}px`, minHeight: `${svgHeight}px` }}
+        >
           <defs>
             <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
               <polygon points="0 0, 10 3.5, 0 7" fill="#00FFFF" />
