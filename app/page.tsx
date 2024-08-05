@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import InputForm from './components/InputForm'
 import FlowChart from './components/FlowChart'
 import Login from './components/Login'
@@ -15,35 +15,47 @@ export default function Home() {
     finalGoal: '',
     keyRequirements: []
   })
+  const flowchartRef = useRef<HTMLDivElement>(null)
 
   const handleInputChange = (newData: ChartData) => {
     setChartData(newData)
   }
 
   const handleExport = async () => {
-    const flowchartElement = document.getElementById('flowchart')
-    if (flowchartElement) {
-      const canvas = await html2canvas(flowchartElement, {
-        backgroundColor: null,
-        scale: 2,
-        logging: false,
-        width: flowchartElement.scrollWidth + 20,
-        height: flowchartElement.scrollHeight + 20,
-        x: -10,
-        y: -10
-      })
-      // Add watermark
-      const ctx = canvas.getContext('2d')
-      if (ctx) {
-        ctx.font = '20px Arial'
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.5)'
-        ctx.fillText('Montaigne Strategy Labs', 20, canvas.height - 20)
+    if (flowchartRef.current) {
+      const scale = 2;
+      const flowchartElement = flowchartRef.current;
+      
+      // Force a repaint of the SVG
+      const svg = flowchartElement.querySelector('svg');
+      if (svg) {
+        svg.style.transform = 'scale(1)';
+        await new Promise(resolve => setTimeout(resolve, 100));
       }
-      const image = canvas.toDataURL('image/jpeg', 0.9)
-      const link = document.createElement('a')
-      link.href = image
-      link.download = 'luxofy-flowchart.jpg'
-      link.click()
+
+      const canvas = await html2canvas(flowchartElement, {
+        scale: scale,
+        logging: false,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: null,
+        width: flowchartElement.offsetWidth,
+        height: flowchartElement.offsetHeight,
+      });
+
+      // Add watermark
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.font = '20px Arial';
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+        ctx.fillText('Montaigne Strategy Labs', 20, canvas.height - 20);
+      }
+
+      const image = canvas.toDataURL('image/png', 1.0);
+      const link = document.createElement('a');
+      link.href = image;
+      link.download = 'luxofy-flowchart.png';
+      link.click();
     }
   }
 
@@ -57,14 +69,14 @@ export default function Home() {
       <div className="flex flex-col lg:flex-row gap-8">
         <InputForm data={chartData} onChange={handleInputChange} />
         <div className="w-full lg:w-2/3">
-          <div id="flowchart">
+          <div id="flowchart" ref={flowchartRef}>
             <FlowChart data={chartData} />
           </div>
           <button
             onClick={handleExport}
             className="mt-4 bg-green-600 text-white p-2 rounded-lg hover:bg-green-700 transition duration-300"
           >
-            Export as JPEG
+            Export as PNG
           </button>
         </div>
       </div>
