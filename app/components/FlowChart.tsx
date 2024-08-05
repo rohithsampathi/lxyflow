@@ -14,8 +14,8 @@ const FlowChart: React.FC<FlowChartProps> = ({ data }) => {
   const allCheckpoints = [...data.checkpoints, data.finalGoal];
   const checkpointsPerRow = 3;
   const rows = Math.ceil(allCheckpoints.length / checkpointsPerRow);
-  const svgWidth = 1200;
-  const svgHeight = rows * 200 + 100;
+  const svgWidth = 1400; // Increased from 1200
+  const svgHeight = rows * 200 + 300; // Increased height for bottom content
   const boxWidth = 300;
   const boxHeight = 80;
   const horizontalGap = 100;
@@ -40,8 +40,10 @@ const FlowChart: React.FC<FlowChartProps> = ({ data }) => {
     let path;
     if (startRow === endRow) {
       if (startRow % 2 === 0) {
+        // Left-to-right in even rows
         path = `M${startPos.x + boxWidth / 2},${startPos.y} H${endPos.x - boxWidth / 2}`;
       } else {
+        // Right-to-left in odd rows, go around the boxes
         const midY = startPos.y - boxHeight / 2 - 20;
         path = `M${startPos.x - boxWidth / 2},${startPos.y} 
                  H${startPos.x - boxWidth / 2 - 20} V${midY} 
@@ -49,6 +51,7 @@ const FlowChart: React.FC<FlowChartProps> = ({ data }) => {
                  H${endPos.x + boxWidth / 2}`;
       }
     } else {
+      // Vertical arrow for row change
       const isRightEdge = startRow % 2 === 0;
       const edgeX = isRightEdge ? svgWidth - 25 : 25;
       path = `M${startPos.x + (isRightEdge ? boxWidth / 2 : -boxWidth / 2)},${startPos.y} 
@@ -68,7 +71,7 @@ const FlowChart: React.FC<FlowChartProps> = ({ data }) => {
   };
 
   return (
-    <div className="w-full bg-gray-900 p-6 rounded-lg shadow-lg overflow-hidden">
+    <div className="w-full bg-gray-900 p-6 rounded-lg shadow-lg" style={{ minWidth: `${svgWidth + 40}px` }}>
       <h2 className="text-3xl font-bold mb-6 text-center text-cyan-400">{data.title}</h2>
       
       <div className="overflow-x-auto">
@@ -128,7 +131,7 @@ const FlowChart: React.FC<FlowChartProps> = ({ data }) => {
         </svg>
       </div>
       
-      <div className="mt-8">
+      <div className="mt-8 pb-8"> {/* Added padding at the bottom */}
         <h3 className="text-2xl font-semibold mb-4 text-cyan-400">Key Requirements:</h3>
         <ul className="list-disc list-inside text-white space-y-2">
           {data.keyRequirements.map((requirement, index) => (
